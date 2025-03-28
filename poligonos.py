@@ -20,6 +20,7 @@ def read_data():
     
     return polygons, points
 
+
 def print_data(polygons, points):
     for i, polygon in enumerate(polygons):
         print(f"Polygon {i + 1}:")
@@ -28,6 +29,7 @@ def print_data(polygons, points):
     
     for i, point in enumerate(points):
         print(f"Point {i + 1}: {point}")
+
 
 def plot_polygons(polygons, points):
     plt.figure(figsize=(8, 8))
@@ -48,15 +50,32 @@ def plot_polygons(polygons, points):
     plt.grid()
     plt.show()
 
-def classify_polygon(polygons):
+
+def classify_polygons(polygons):
+    """
+    nao simples := 0;
+    simples e nao convexos := 1;
+    simples e convexos := 2;
+    """
+    output = []
     for i, polygon in enumerate(polygons):
         if isConvex(polygon):
-            print(f"O polígono {i+1} é convexo!")
+            print(f"O polígono {i+1} é simples convexo!")
+            output.append(2)
         else:
             print(f"O polígono {i+1} é não-convexo!")
+        # elif isSimple(polygon):
+        #     print(f"O polígono {i+1} é simples não-convexo!")
+        #     output.append(1)
+        # else:
+        #     print(f"O polígono {i+1} é não-simples!")
+        #     output.append(0)
+    return output
+
 
 def cross_product(p1, p2, p3):
     return (p2[0] - p1[0]) * (p3[1] - p2[1]) - (p2[1] - p1[1]) * (p3[0] - p2[0])
+
 
 def isConvex(polygon):
     n = len(polygon)
@@ -77,8 +96,18 @@ def isConvex(polygon):
     
     return True
 
+
+def pointInPolygon(polygons, classified, points):
+    for i in range(len(polygons)):
+        if (classified[i] == 1) or (classified[i] == 2):
+            #simples convexo ou não-convexo
+            a = 1
+
+
 if __name__ == "__main__":
     polygons, points = read_data()
     print_data(polygons, points)
-    classify_polygon(polygons)
+    classified = classify_polygons(polygons)
+    #pointInPolygon(polygons, classified, points)
+
     plot_polygons(polygons, points)
