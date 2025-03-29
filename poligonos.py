@@ -1,13 +1,13 @@
 import matplotlib.pyplot as plt
 import math
+from sortedcontainers import SortedList
 
 def read_data():
     m, n = map(int, input().split())
     polygons = []
     points = []
-    
     for _ in range(m):
-        ni = int(input())  # Número de vertices do poligono
+        ni = int(input())  # Número de vértices do polígono
         vertices = []
         for _ in range(ni):
             x, y = map(int, input().split())
@@ -19,17 +19,6 @@ def read_data():
         points.append((x, y))
     
     return polygons, points
-
-
-def print_data(polygons, points):
-    for i, polygon in enumerate(polygons):
-        print(f"Polygon {i + 1}:")
-        for vertex in polygon:
-            print(f"  {vertex}")
-    
-    for i, point in enumerate(points):
-        print(f"Point {i + 1}: {point}")
-
 
 def plot_polygons(polygons, points):
     plt.figure(figsize=(8, 8))
@@ -50,64 +39,64 @@ def plot_polygons(polygons, points):
     plt.grid()
     plt.show()
 
-
 def classify_polygons(polygons):
-    """
-    nao simples := 0;
-    simples e nao convexos := 1;
-    simples e convexos := 2;
-    """
     output = []
     for i, polygon in enumerate(polygons):
-        if isConvex(polygon):
+        if is_convex(polygon):
             print(f"O polígono {i+1} é simples convexo!")
-            output.append(2)
+            output.append(0)
+        elif not is_simple(polygon):
+            print(f"O polígono {i+1} é não-simples!")
+            output.append(1)
         else:
-            print(f"O polígono {i+1} é não-convexo!")
-        # elif isSimple(polygon):
-        #     print(f"O polígono {i+1} é simples não-convexo!")
-        #     output.append(1)
-        # else:
-        #     print(f"O polígono {i+1} é não-simples!")
-        #     output.append(0)
+            print(f"O polígono {i+1} é simples não-convexo!")
+            output.append(2)
     return output
-
 
 def cross_product(p1, p2, p3):
     return (p2[0] - p1[0]) * (p3[1] - p2[1]) - (p2[1] - p1[1]) * (p3[0] - p2[0])
 
-
-def isConvex(polygon):
+def is_convex(polygon):
     n = len(polygon)
-    sign = None  # Variável da direção inicial do giro
+    sign = None
     for i in range(n):
-        p1 = polygon[i]
-        p2 = polygon[(i + 1) % n]
-        p3 = polygon[(i + 2) % n] 
-        
-        cross = cross_product(p1, p2, p3)  # Calcula o produto vetorial
-        
+        p1, p2, p3 = polygon[i], polygon[(i + 1) % n], polygon[(i + 2) % n]
+        cross = cross_product(p1, p2, p3)
         current_sign = cross > 0
-        
         if sign is None:
             sign = current_sign
         elif sign != current_sign:
             return False
-    
     return True
 
+def do_intersect(p1, q1, p2, q2):
+    o1 = cross_product(p1, q1, p2)
+    o2 = cross_product(p1, q1, q2)
+    o3 = cross_product(p2, q2, p1)
+    o4 = cross_product(p2, q2, q1)
+    
+    # Verifica sinais opostos
+    return (o1 * o2 < 0) and (o3 * o4 < 0)  
 
-def pointInPolygon(polygons, classified, points):
-    for i in range(len(polygons)):
-        if (classified[i] == 1) or (classified[i] == 2):
-            #simples convexo ou não-convexo
-            a = 1
+def is_simple(polygon):
 
+    n = len(polygon)
+    edges = []
+
+    # Gera todas as arestas do polígono
+    for i in range(n):
+        edges.append((polygon[i], polygon[(i + 1) % n]))
+    
+    # Verifica todas as combinações de arestas não adjacentes
+    for i in range(len(edges)):
+        for j in range(i + 1, len(edges)):
+            # Desconsidera arestas adjacentes
+            if i != j and (i + 1) % n != j and (j + 1) % n != i:
+                if do_intersect(edges[i][0], edges[i][1], edges[j][0], edges[j][1]):
+                    return False
+    return True
 
 if __name__ == "__main__":
     polygons, points = read_data()
-    print_data(polygons, points)
     classified = classify_polygons(polygons)
-    #pointInPolygon(polygons, classified, points)
-
     plot_polygons(polygons, points)
