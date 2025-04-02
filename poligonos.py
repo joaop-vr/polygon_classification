@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import math
-from sortedcontainers import SortedList
 
 ######################## FUNÇÔES AUXILIARES #####################################
 
@@ -44,6 +43,47 @@ def plot_polygons(polygons, points):
 
 
 ######################## FUNÇÔES PRINCIPAIS #####################################
+
+def angle_between_vectors(v1, v2):
+    dot_product = v1[0] * v2[0] + v1[1] * v2[1]
+    norm_v1 = math.sqrt(v1[0] ** 2 + v1[1] ** 2)
+    norm_v2 = math.sqrt(v2[0] ** 2 + v2[1] ** 2)
+    
+    if norm_v1 == 0 or norm_v2 == 0:
+        return 0  # Evita divisão por zero
+    
+    cos_theta = dot_product / (norm_v1 * norm_v2)
+    cos_theta = max(-1, min(1, cos_theta))  # Garante que o valor esteja dentro do intervalo válido
+    return math.acos(cos_theta)
+
+
+def point_inside_polygon(polygons, points, classified):
+    for i, polygon in enumerate(polygons): 
+        if classified[i] == 0 or classified[i] == 2:  # Apenas polígonos simples (convexos ou côncavos)
+            for point in points:
+                px, py = point
+                
+                # Verifica se o ponto coincide com um dos vértices do polígono
+                if (px, py) in polygon:
+                    print(f"O Ponto ({px},{py}) está dentro do polígono {i+1} (coincide com um vértice)!")
+                    continue  # Pula a verificação por ângulo
+                
+                total_angle = 0.0
+                
+                for k in range(len(polygon)):  # Iteração sobre os vértices do polígono
+                    x1, y1 = polygon[k][0] - px, polygon[k][1] - py
+                    x2, y2 = polygon[(k + 1) % len(polygon)][0] - px, polygon[(k + 1) % len(polygon)][1] - py
+                    
+                    angle = angle_between_vectors((x1, y1), (x2, y2))
+                    total_angle += angle
+                
+                if math.isclose(total_angle, 2 * math.pi, rel_tol=1e-5):
+                    print(f"O Ponto ({px},{py}) está dentro do polígono {i+1}!")
+                else:
+                    print(f"O Ponto ({px},{py}) está fora do polígono {i+1}!")
+
+
+
 
 def do_intersect(p1, q1, p2, q2):
     o1 = cross_product(p1, q1, p2)
@@ -106,4 +146,5 @@ def classify_polygons(polygons):
 if __name__ == "__main__":
     polygons, points = read_data()
     classified = classify_polygons(polygons)
+    point_inside_polygon(polygons, points, classified)
     plot_polygons(polygons, points)
