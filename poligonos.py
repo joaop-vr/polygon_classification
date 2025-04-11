@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import math
+import sys
 
 ######################## FUNÇÔES AUXILIARES #####################################
 
@@ -159,4 +160,5 @@ if __name__ == "__main__":
     polygons, points = read_data()
     classified = classify_polygons(polygons)
     point_inside_polygon(polygons, points, classified)
-    plot_polygons(polygons, points)
+    if "-p" in sys.argv:
+        plot_polygons(polygons, points)
