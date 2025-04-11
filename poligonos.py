@@ -24,7 +24,6 @@ def read_data():
 
 def plot_polygons(polygons, points):
     plt.figure(figsize=(8, 8))
-    
     for i, polygon in enumerate(polygons):
         x, y = zip(*polygon)
         x += (x[0],)
@@ -58,31 +57,44 @@ def angle_between_vectors(v1, v2):
 
 
 def point_inside_polygon(polygons, points, classified):
-    for i, polygon in enumerate(polygons): 
-        if classified[i] == 0 or classified[i] == 2:  # Apenas polígonos simples (convexos ou côncavos)
-            for point in points:
-                px, py = point
-                
-                # Verifica se o ponto coincide com um dos vértices do polígono
+    
+    # Cria uma lista de listas para armazenar os índices dos polígonos que contêm cada ponto.
+    result = [[] for _ in range(len(points))]
+    
+    # Itera sobre cada polígono com seu índice
+    for i, polygon in enumerate(polygons):
+        # Processa apenas polígonos classificados como simples (convexos ou côncavos)
+        if classified[i] == 0 or classified[i] == 2:
+            # Itera sobre cada ponto com seu índice
+            for j, (px, py) in enumerate(points):
+                # Se o ponto coincidir com algum vértice do polígono, já consideramos que ele está dentro
                 if (px, py) in polygon:
-                    print(f"O Ponto ({px},{py}) está dentro do polígono {i+1} (coincide com um vértice)!")
-                    continue  # Pula a verificação por ângulo
-                
-                total_angle = 0.0
-                
-                for k in range(len(polygon)):  # Iteração sobre os vértices do polígono
-                    x1, y1 = polygon[k][0] - px, polygon[k][1] - py
-                    x2, y2 = polygon[(k + 1) % len(polygon)][0] - px, polygon[(k + 1) % len(polygon)][1] - py
+                    result[j].append(i+1)  # +1 para usar indexação 1-base
+                    continue
+
+                # Cálculo do ângulo total formado pelas arestas com vértices do polígono
+                angulo_total = 0.0
+                n_vertices = len(polygon)
+                for k in range(n_vertices):
+                    x1 = polygon[k][0] - px
+                    y1 = polygon[k][1] - py
+                    x2 = polygon[(k + 1) % n_vertices][0] - px
+                    y2 = polygon[(k + 1) % n_vertices][1] - py
                     
-                    angle = angle_between_vectors((x1, y1), (x2, y2))
-                    total_angle += angle
+                    angulo_total += angle_between_vectors((x1, y1), (x2, y2))
                 
-                if math.isclose(total_angle, 2 * math.pi, rel_tol=1e-5):
-                    print(f"O Ponto ({px},{py}) está dentro do polígono {i+1}!")
-                else:
-                    print(f"O Ponto ({px},{py}) está fora do polígono {i+1}!")
-
-
+                # Se a soma dos ângulos for aproximadamente 2pi(360 graus), o ponto está dentro
+                if math.isclose(angulo_total, 2 * math.pi, rel_tol=1e-5):
+                    result[j].append(i+1)
+    
+    # Para cada ponto, ordena os índices dos polígonos e imprime
+    for j, lista_poligonos in enumerate(result):
+        lista_poligonos.sort()
+        if lista_poligonos:
+            saida = " ".join(str(idx) for idx in lista_poligonos)
+            print(f"{j+1}:{saida}")
+        else:
+            print(f"{j+1}:")
 
 
 def do_intersect(p1, q1, p2, q2):
@@ -132,13 +144,13 @@ def classify_polygons(polygons):
     output = []
     for i, polygon in enumerate(polygons):
         if is_convex(polygon):
-            print(f"O polígono {i+1} é simples convexo!")
+            print(f"{i+1} simples e convexo")
             output.append(0)
         elif not is_simple(polygon):
-            print(f"O polígono {i+1} é não-simples!")
+            print(f"{i+1} nao simples")
             output.append(1)
         else:
-            print(f"O polígono {i+1} é simples não-convexo!")
+            print(f"{i+1} simples e nao convexo")
             output.append(2)
     return output
 
