@@ -5,30 +5,54 @@ Este projeto realiza a leitura de um conjunto de polígonos e pontos, classifica
 ## 📦 Pré-requisitos
 
 - Python 3 (recomendado: 3.8+)
-- `virtualenv` (opcional, mas recomendado)
-- `matplotlib` para visualização
+- `make` (para utilizar os comandos automatizados)
+- O programa cria automaticamente um ambiente virtual (`poly_env`) e instala as dependências necessárias.
 
-## 🧪 Como configurar o ambiente (opcional)
+## ⚙️ Como configurar e executar com Makefile
+
+### 🔧 Configurar ambiente virtual e instalar dependências
 
 ```bash
-# Navegue até a pasta do projeto
-cd ~/pasta_projeto
-
-# Crie o ambiente virtual
-python3 -m venv poly_env
-
-# Ative o ambiente virtual
-source poly_env/bin/activate
-
-# Instale as dependências
-pip install matplotlib
+make setup
 ```
 
-## ▶️ Como rodar o programa
+Esse comando criará um ambiente virtual `poly_env`, instalará as dependências do `requirements.txt` e mostrará as instruções finais.
 
-O programa espera um arquivo de entrada no seguinte formato via redirecionamento (`<`):
+### ▶️ Rodar o programa com entrada padrão
 
 ```bash
+make run
+```
+
+Este comando executa o programa com o arquivo `entrada.txt`. Você pode alterar o conteúdo do arquivo conforme necessário.
+
+### 🧼 Remover ambiente virtual
+
+```bash
+make clean
+```
+
+Esse comando remove o ambiente `poly_env`.
+
+### 🆘 Ver ajuda
+
+```bash
+make help
+```
+
+---
+
+## 📜 Executar manualmente (sem Makefile)
+
+```bash
+# Criar e ativar ambiente virtual
+python3 -m venv poly_env
+source poly_env/bin/activate
+
+# Instalar dependências
+pip install -r requirements.txt
+
+# Rodar programa com arquivo de entrada
 python3 poligonos.py < testes/t1.txt
 ```
 
@@ -40,7 +64,7 @@ Use a flag `-p` após o nome do script:
 python3 poligonos.py -p < testes/t1.txt
 ```
 
-### 📝 Formato do arquivo de entrada (`testes/t1.txt`)
+## 📝 Formato do arquivo de entrada (`testes/t1.txt`)
 
 - Primeira linha: dois inteiros `m n`, onde `m` é o número de polígonos e `n` é o número de pontos.
 - Para cada polígono:
@@ -97,6 +121,7 @@ A saída consiste na classificação dos polígonos e a indicação de quais pol
 
 - Certifique-se de estar usando `python3`.
 - O uso do `-p` ativa a visualização via `matplotlib`, abrindo uma janela com os polígonos e os pontos.
+- O `Makefile` é recomendado para facilitar a configuração e execução.
 
 ---
 
