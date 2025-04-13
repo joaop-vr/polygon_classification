@@ -57,45 +57,81 @@ def angle_between_vectors(v1, v2):
     return math.acos(cos_theta)
 
 
+import math
+
+def point_on_segment(p, a, b):
+    """Verifica se o ponto p está no segmento de reta entre a e b."""
+    # Verifica colinearidade
+    cross_product = (p[0] - a[0]) * (b[1] - a[1]) - (p[1] - a[1]) * (b[0] - a[0])
+    if not math.isclose(cross_product, 0, rel_tol=1e-9, abs_tol=0.0):
+        return False
+    # Verifica se está dentro do retângulo delimitador
+    min_x = min(a[0], b[0])
+    max_x = max(a[0], b[0])
+    min_y = min(a[1], b[1])
+    max_y = max(a[1], b[1])
+    if (p[0] < min_x - 1e-9 or p[0] > max_x + 1e-9 or
+        p[1] < min_y - 1e-9 or p[1] > max_y + 1e-9):
+        return False
+    return True
+
 def point_inside_polygon(polygons, points, classified):
-    
-    # Cria uma lista de listas para armazenar os índices dos polígonos que contêm cada ponto.
     result = [[] for _ in range(len(points))]
     
-    # Itera sobre cada polígono com seu índice
     for i, polygon in enumerate(polygons):
-        # Processa apenas polígonos classificados como simples (convexos ou côncavos)
-        if classified[i] == 0 or classified[i] == 2:
-            # Itera sobre cada ponto com seu índice
-            for j, (px, py) in enumerate(points):
-                # Se o ponto coincidir com algum vértice do polígono, já consideramos que ele está dentro
-                if (px, py) in polygon:
-                    result[j].append(i+1)  # +1 para usar indexação 1-base
-                    continue
-
-                # Cálculo do ângulo total formado pelas arestas com vértices do polígono
-                angulo_total = 0.0
-                n_vertices = len(polygon)
-                for k in range(n_vertices):
-                    x1 = polygon[k][0] - px
-                    y1 = polygon[k][1] - py
-                    x2 = polygon[(k + 1) % n_vertices][0] - px
-                    y2 = polygon[(k + 1) % n_vertices][1] - py
-                    
-                    angulo_total += angle_between_vectors((x1, y1), (x2, y2))
+        if classified[i] not in (0, 2):
+            continue
+        
+        for j, (px, py) in enumerate(points):
+            # Verifica se o ponto é um vértice
+            is_vertex = False
+            for vertex in polygon:
+                if math.isclose(px, vertex[0], rel_tol=1e-9) and math.isclose(py, vertex[1], rel_tol=1e-9):
+                    is_vertex = True
+                    break
+            if is_vertex:
+                result[j].append(i+1)
+                continue
+            
+            # Verifica se está em alguma aresta
+            on_edge = False
+            n = len(polygon)
+            for k in range(n):
+                a = polygon[k]
+                b = polygon[(k+1) % n]
+                if point_on_segment((px, py), a, b):
+                    on_edge = True
+                    break
+            if on_edge:
+                result[j].append(i+1)
+                continue
+            
+            # Algoritmo do Ray Casting
+            inside = False
+            for k in range(n):
+                a = polygon[k]
+                b = polygon[(k+1) % n]
+                ay, by = a[1], b[1]
                 
-                # Se a soma dos ângulos for aproximadamente 2pi(360 graus), o ponto está dentro
-                if math.isclose(angulo_total, 2 * math.pi, rel_tol=1e-5):
-                    result[j].append(i+1)
+                # Verifica se o raio cruza a aresta
+                if ((ay > py) != (by > py)):
+                    # Calcula a interseção x
+                    dx = b[0] - a[0]
+                    dy = b[1] - a[1]
+                    if dy == 0:
+                        continue  # Ignora arestas horizontais
+                    t = (py - a[1]) / dy
+                    x_intersec = a[0] + t * dx
+                    # Verifica se o ponto está à esquerda da interseção
+                    if px < x_intersec:
+                        inside = not inside
+            if inside:
+                result[j].append(i+1)
     
-    # Para cada ponto, ordena os índices dos polígonos e imprime
-    for j, lista_poligonos in enumerate(result):
-        lista_poligonos.sort()
-        if lista_poligonos:
-            saida = " ".join(str(idx) for idx in lista_poligonos)
-            print(f"{j+1}:{saida}")
-        else:
-            print(f"{j+1}:")
+    # Formata a saída
+    for j, lista in enumerate(result):
+        lista.sort()
+        print(f"{j+1}:" + " ".join(map(str, lista))) if lista else print(f"{j+1}:")
 
 
 def do_intersect(p1, q1, p2, q2):
