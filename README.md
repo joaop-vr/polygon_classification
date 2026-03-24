@@ -2,15 +2,15 @@
 
 Este projeto realiza a leitura de um conjunto de polígonos e pontos, classifica os polígonos quanto à sua simplicidade e convexidade, e verifica em quais polígonos cada ponto está contido. Opcionalmente, também é possível visualizar os dados em um gráfico.
 
-## 📦 Pré-requisitos
+## Pré-requisitos
 
 - Python 3 (recomendado: 3.8+)
 - `make` (para utilizar os comandos automatizados)
 - O programa cria automaticamente um ambiente virtual (`poly_env`) e instala as dependências necessárias.
 
-## ⚙️ Como configurar e executar com Makefile
+## Como configurar e executar com Makefile
 
-### 🔧 Configurar ambiente virtual e instalar dependências
+### Configurar ambiente virtual e instalar dependências
 
 ```bash
 make setup
@@ -18,7 +18,7 @@ make setup
 
 Esse comando criará um ambiente virtual `poly_env`, instalará as dependências do `requirements.txt` e mostrará as instruções finais.
 
-### ▶️ Rodar o programa com entrada padrão
+### Rodar o programa com entrada padrão
 
 ```bash
 make run
@@ -26,7 +26,7 @@ make run
 
 Este comando executa o programa com o arquivo `entrada.txt`. Você pode alterar o conteúdo do arquivo conforme necessário.
 
-### 🧼 Remover ambiente virtual
+### Remover ambiente virtual
 
 ```bash
 make clean
@@ -34,7 +34,7 @@ make clean
 
 Esse comando remove o ambiente `poly_env`.
 
-### 🆘 Ver ajuda
+### Ver ajuda
 
 ```bash
 make help
@@ -42,7 +42,7 @@ make help
 
 ---
 
-## 📜 Executar manualmente (sem Makefile)
+## Executar manualmente (sem Makefile)
 
 ```bash
 # Criar e ativar ambiente virtual
@@ -56,7 +56,7 @@ pip install -r requirements.txt
 python3 poligonos.py < testes/t1.txt
 ```
 
-### 🔍 Para exibir visualização gráfica
+### Para exibir visualização gráfica
 
 Use a flag `-p` após o nome do script:
 
@@ -64,7 +64,7 @@ Use a flag `-p` após o nome do script:
 python3 poligonos.py -p < testes/t1.txt
 ```
 
-## 📝 Formato do arquivo de entrada (`testes/t1.txt`)
+## Formato do arquivo de entrada (`testes/t1.txt`)
 
 - Primeira linha: dois inteiros `m n`, onde `m` é o número de polígonos e `n` é o número de pontos.
 - Para cada polígono:
@@ -102,7 +102,7 @@ python3 poligonos.py -p < testes/t1.txt
 12 11
 ```
 
-## 🧩 Saída esperada
+## Saída esperada
 
 A saída consiste na classificação dos polígonos e a indicação de quais polígonos contêm cada ponto, numerados a partir de 1.
 
@@ -117,12 +117,10 @@ A saída consiste na classificação dos polígonos e a indicação de quais pol
 4:2
 ```
 
-## 🛠️ Observações
+## Observações
 
 - Certifique-se de estar usando `python3`.
 - O uso do `-p` ativa a visualização via `matplotlib`, abrindo uma janela com os polígonos e os pontos.
 - O `Makefile` é recomendado para facilitar a configuração e execução.
 
----
 
-Desenvolvido por João Pedro Vicente Ramalho 🎓
